@@ -6,6 +6,7 @@ import { Logger } from "../logger/Logger"
 import { DataSource } from "../data-source/DataSource"
 import { QueryResultCache } from "../cache/QueryResultCache"
 import { MixedList } from "../common/MixedList"
+import { DriverConstructor } from "../driver/DriverConstructor"
 
 /**
  * BaseDataSourceOptions is set of DataSourceOptions shared by all database types.
@@ -14,7 +15,7 @@ export interface BaseDataSourceOptions {
     /**
      * Database type. This value is required.
      */
-    readonly type: DatabaseType
+    readonly type: DatabaseType | DriverConstructor;
 
     /**
      * Connection name. If connection name is not given then it will be called "default".
@@ -75,11 +76,11 @@ export interface BaseDataSourceOptions {
      * Logger instance used to log queries and events in the ORM.
      */
     readonly logger?:
-        | "advanced-console"
-        | "simple-console"
-        | "file"
-        | "debug"
-        | Logger
+    | "advanced-console"
+    | "simple-console"
+    | "file"
+    | "debug"
+    | Logger
 
     /**
      * Maximum number of milliseconds query should be executed before logger log a warning.
@@ -156,51 +157,51 @@ export interface BaseDataSourceOptions {
      * Allows to setup cache options.
      */
     readonly cache?:
-        | boolean
-        | {
-              /**
-               * Type of caching.
-               *
-               * - "database" means cached values will be stored in the separate table in database. This is default value.
-               * - "redis" means cached values will be stored inside redis. You must provide redis connection options.
-               */
-              readonly type?:
-                  | "database"
-                  | "redis"
-                  | "ioredis"
-                  | "ioredis/cluster" // todo: add mongodb and other cache providers as well in the future
+    | boolean
+    | {
+        /**
+         * Type of caching.
+         *
+         * - "database" means cached values will be stored in the separate table in database. This is default value.
+         * - "redis" means cached values will be stored inside redis. You must provide redis connection options.
+         */
+        readonly type?:
+        | "database"
+        | "redis"
+        | "ioredis"
+        | "ioredis/cluster" // todo: add mongodb and other cache providers as well in the future
 
-              /**
-               * Factory function for custom cache providers that implement QueryResultCache.
-               */
-              readonly provider?: (connection: DataSource) => QueryResultCache
+        /**
+         * Factory function for custom cache providers that implement QueryResultCache.
+         */
+        readonly provider?: (connection: DataSource) => QueryResultCache
 
-              /**
-               * Configurable table name for "database" type cache.
-               * Default value is "query-result-cache"
-               */
-              readonly tableName?: string
+        /**
+         * Configurable table name for "database" type cache.
+         * Default value is "query-result-cache"
+         */
+        readonly tableName?: string
 
-              /**
-               * Used to provide redis connection options.
-               */
-              readonly options?: any
+        /**
+         * Used to provide redis connection options.
+         */
+        readonly options?: any
 
-              /**
-               * If set to true then queries (using find methods and QueryBuilder's methods) will always be cached.
-               */
-              readonly alwaysEnabled?: boolean
+        /**
+         * If set to true then queries (using find methods and QueryBuilder's methods) will always be cached.
+         */
+        readonly alwaysEnabled?: boolean
 
-              /**
-               * Time in milliseconds in which cache will expire.
-               * This can be setup per-query.
-               * Default value is 1000 which is equivalent to 1 second.
-               */
-              readonly duration?: number
+        /**
+         * Time in milliseconds in which cache will expire.
+         * This can be setup per-query.
+         * Default value is 1000 which is equivalent to 1 second.
+         */
+        readonly duration?: number
 
-              /**
-               * Used to specify if cache errors should be ignored, and pass through the call to the Database.
-               */
-              readonly ignoreErrors?: boolean
-          }
+        /**
+         * Used to specify if cache errors should be ignored, and pass through the call to the Database.
+         */
+        readonly ignoreErrors?: boolean
+    }
 }

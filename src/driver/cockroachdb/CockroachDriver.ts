@@ -31,7 +31,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with Cockroach DBMS.
  */
-export class CockroachDriver implements Driver {
+export class CockroachDriver implements Driver<CockroachConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -394,9 +394,9 @@ export class CockroachDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         // unique_rowid() generates bigint value and should not be converted to number
@@ -806,7 +806,7 @@ export class CockroachDriver implements Driver {
                 (columnMetadata.scale !== undefined &&
                     tableColumn.scale !== columnMetadata.scale) ||
                 tableColumn.comment !==
-                    this.escapeComment(columnMetadata.comment) ||
+                this.escapeComment(columnMetadata.comment) ||
                 (!tableColumn.isGenerated &&
                     this.lowerDefaultValueIfNecessary(
                         this.normalizeDefault(columnMetadata),
@@ -814,11 +814,11 @@ export class CockroachDriver implements Driver {
                 tableColumn.isPrimary !== columnMetadata.isPrimary ||
                 tableColumn.isNullable !== columnMetadata.isNullable ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 tableColumn.isGenerated !== columnMetadata.isGenerated ||
                 tableColumn.generatedType !== columnMetadata.generatedType ||
                 (tableColumn.asExpression || "").trim() !==
-                    (columnMetadata.asExpression || "").trim()
+                (columnMetadata.asExpression || "").trim()
             )
         })
     }
@@ -896,7 +896,7 @@ export class CockroachDriver implements Driver {
                     this.options.nativeDriver || PlatformTools.load("pg-native")
                 if (pgNative && this.postgres.native)
                     this.postgres = this.postgres.native
-            } catch (e) {}
+            } catch (e) { }
         } catch (e) {
             // todo: better error for browser env
             throw new DriverPackageNotInstalledError("Postgres", "pg")

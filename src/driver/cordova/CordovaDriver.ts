@@ -14,7 +14,7 @@ interface Window {
 
 declare let window: Window
 
-export class CordovaDriver extends AbstractSqliteDriver {
+export class CordovaDriver extends AbstractSqliteDriver<CordovaConnectionOptions> {
     options: CordovaConnectionOptions
 
     // -------------------------------------------------------------------------

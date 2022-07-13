@@ -7,7 +7,7 @@ import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError"
 import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError"
 import { ReplicationMode } from "../types/ReplicationMode"
 
-export class ReactNativeDriver extends AbstractSqliteDriver {
+export class ReactNativeDriver extends AbstractSqliteDriver<ReactNativeConnectionOptions> {
     options: ReactNativeConnectionOptions
 
     // -------------------------------------------------------------------------

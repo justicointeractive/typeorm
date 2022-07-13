@@ -30,7 +30,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with MySQL DBMS.
  */
-export class MysqlDriver implements Driver {
+export class MysqlDriver implements Driver<MysqlConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -640,9 +640,9 @@ export class MysqlDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (
@@ -986,7 +986,7 @@ export class MysqlDriver implements Driver {
                 tableColumn.asExpression !== columnMetadata.asExpression ||
                 tableColumn.generatedType !== columnMetadata.generatedType ||
                 tableColumn.comment !==
-                    this.escapeComment(columnMetadata.comment) ||
+                this.escapeComment(columnMetadata.comment) ||
                 !this.compareDefaultValues(
                     this.normalizeDefault(columnMetadata),
                     tableColumn.default,
@@ -998,11 +998,11 @@ export class MysqlDriver implements Driver {
                         columnMetadata.enum.map((val) => val + ""),
                     )) ||
                 tableColumn.onUpdate !==
-                    this.normalizeDatetimeFunction(columnMetadata.onUpdate) ||
+                this.normalizeDatetimeFunction(columnMetadata.onUpdate) ||
                 tableColumn.isPrimary !== columnMetadata.isPrimary ||
                 !this.compareNullableValues(columnMetadata, tableColumn) ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 (columnMetadata.generationStrategy !== "uuid" &&
                     tableColumn.isGenerated !== columnMetadata.isGenerated)
 

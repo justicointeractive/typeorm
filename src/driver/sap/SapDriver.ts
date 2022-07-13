@@ -31,7 +31,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
  *
  * todo: looks like there is no built in support for connection pooling, we need to figure out something
  */
-export class SapDriver implements Driver {
+export class SapDriver implements Driver<SapConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -504,9 +504,9 @@ export class SapDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (columnMetadata.type === Boolean) {
@@ -751,7 +751,7 @@ export class SapDriver implements Driver {
                 tableColumn.type !== this.normalizeType(columnMetadata) ||
                 (columnMetadata.length &&
                     tableColumn.length !==
-                        this.getColumnLength(columnMetadata)) ||
+                    this.getColumnLength(columnMetadata)) ||
                 tableColumn.precision !== columnMetadata.precision ||
                 tableColumn.scale !== columnMetadata.scale ||
                 // || tableColumn.comment !== columnMetadata.comment || // todo
@@ -760,7 +760,7 @@ export class SapDriver implements Driver {
                 tableColumn.isPrimary !== columnMetadata.isPrimary ||
                 tableColumn.isNullable !== columnMetadata.isNullable ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 (columnMetadata.generationStrategy !== "uuid" &&
                     tableColumn.isGenerated !== columnMetadata.isGenerated)
             )

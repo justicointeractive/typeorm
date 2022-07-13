@@ -11,7 +11,7 @@ import { ReplicationMode } from "../types/ReplicationMode"
 /**
  * Organizes communication with sqlite DBMS within Nativescript.
  */
-export class NativescriptDriver extends AbstractSqliteDriver {
+export class NativescriptDriver extends AbstractSqliteDriver<NativescriptConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------

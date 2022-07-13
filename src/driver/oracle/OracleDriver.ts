@@ -29,7 +29,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with Oracle RDBMS.
  */
-export class OracleDriver implements Driver {
+export class OracleDriver implements Driver<OracleConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -521,9 +521,9 @@ export class OracleDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (columnMetadata.type === Boolean) {
@@ -784,7 +784,7 @@ export class OracleDriver implements Driver {
                 tableColumn.asExpression !== columnMetadata.asExpression ||
                 tableColumn.generatedType !== columnMetadata.generatedType ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 (columnMetadata.generationStrategy !== "uuid" &&
                     tableColumn.isGenerated !== columnMetadata.isGenerated)
 

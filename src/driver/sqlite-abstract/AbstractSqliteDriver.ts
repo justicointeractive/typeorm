@@ -34,7 +34,7 @@ type DatabasesMap = Record<
 /**
  * Organizes communication with sqlite DBMS.
  */
-export abstract class AbstractSqliteDriver implements Driver {
+export abstract class AbstractSqliteDriver<TOptions extends BaseDataSourceOptions> implements Driver<TOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -61,7 +61,7 @@ export abstract class AbstractSqliteDriver implements Driver {
     /**
      * Connection options.
      */
-    options: BaseDataSourceOptions
+    options: TOptions
 
     /**
      * Master database used to perform all write queries.
@@ -244,7 +244,7 @@ export abstract class AbstractSqliteDriver implements Driver {
 
     constructor(connection: DataSource) {
         this.connection = connection
-        this.options = connection.options as BaseDataSourceOptions
+        this.options = connection.options as TOptions
 
         this.database = DriverUtils.buildDriverOptions(this.options).database
     }
@@ -357,9 +357,9 @@ export abstract class AbstractSqliteDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (
@@ -771,7 +771,7 @@ export abstract class AbstractSqliteDriver implements Driver {
                 tableColumn.generatedType !== columnMetadata.generatedType ||
                 tableColumn.asExpression !== columnMetadata.asExpression ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 (columnMetadata.generationStrategy !== "uuid" &&
                     tableColumn.isGenerated !== columnMetadata.isGenerated)
 

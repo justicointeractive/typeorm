@@ -9,7 +9,7 @@ import {
 } from "../../error"
 import { ReplicationMode } from "../types/ReplicationMode"
 
-export class CapacitorDriver extends AbstractSqliteDriver {
+export class CapacitorDriver extends AbstractSqliteDriver<CapacitorConnectionOptions> {
     driver: any
     options: CapacitorConnectionOptions
 

@@ -31,7 +31,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with PostgreSQL DBMS.
  */
-export class PostgresDriver implements Driver {
+export class PostgresDriver implements Driver<PostgresConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -407,15 +407,13 @@ export class PostgresDriver implements Driver {
             try {
                 await this.executeQuery(
                     connection,
-                    `CREATE EXTENSION IF NOT EXISTS "${
-                        this.options.uuidExtension || "uuid-ossp"
+                    `CREATE EXTENSION IF NOT EXISTS "${this.options.uuidExtension || "uuid-ossp"
                     }"`,
                 )
             } catch (_) {
                 logger.log(
                     "warn",
-                    `At least one of the entities has uuid column, but the '${
-                        this.options.uuidExtension || "uuid-ossp"
+                    `At least one of the entities has uuid column, but the '${this.options.uuidExtension || "uuid-ossp"
                     }' extension cannot be installed automatically. Please install it manually using superuser rights, or select another uuid extension.`,
                 )
             }
@@ -688,9 +686,9 @@ export class PostgresDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (columnMetadata.type === Boolean) {
@@ -714,15 +712,15 @@ export class PostgresDriver implements Driver {
                 const regexp =
                     /"([^"\\]*(?:\\.[^"\\]*)*)"=>(?:(NULL)|"([^"\\]*(?:\\.[^"\\]*)*)")(?:,|$)/g
                 const object: ObjectLiteral = {}
-                ;`${value}`.replace(
-                    regexp,
-                    (_, key, nullValue, stringValue) => {
-                        object[unescapeString(key)] = nullValue
-                            ? null
-                            : unescapeString(stringValue)
-                        return ""
-                    },
-                )
+                    ; `${value}`.replace(
+                        regexp,
+                        (_, key, nullValue, stringValue) => {
+                            object[unescapeString(key)] = nullValue
+                                ? null
+                                : unescapeString(stringValue)
+                            return ""
+                        },
+                    )
                 value = object
             }
         } else if (columnMetadata.type === "simple-array") {
@@ -788,7 +786,7 @@ export class PostgresDriver implements Driver {
                 // convert to number if that exists in possible enum options
                 value =
                     !isNaN(+value) &&
-                    columnMetadata.enum!.indexOf(parseInt(value)) >= 0
+                        columnMetadata.enum!.indexOf(parseInt(value)) >= 0
                         ? parseInt(value)
                         : value
             }
@@ -1037,11 +1035,11 @@ export class PostgresDriver implements Driver {
             const tableColumnDefault =
                 typeof tableColumn.default === "string"
                     ? JSON.parse(
-                          tableColumn.default.substring(
-                              1,
-                              tableColumn.default.length - 1,
-                          ),
-                      )
+                        tableColumn.default.substring(
+                            1,
+                            tableColumn.default.length - 1,
+                        ),
+                    )
                     : tableColumn.default
 
             return OrmUtils.deepCompare(
@@ -1217,13 +1215,13 @@ export class PostgresDriver implements Driver {
                 (columnMetadata.scale !== undefined &&
                     tableColumn.scale !== columnMetadata.scale) ||
                 tableColumn.comment !==
-                    this.escapeComment(columnMetadata.comment) ||
+                this.escapeComment(columnMetadata.comment) ||
                 (!tableColumn.isGenerated &&
                     !this.defaultEqual(columnMetadata, tableColumn)) || // we included check for generated here, because generated columns already can have default values
                 tableColumn.isPrimary !== columnMetadata.isPrimary ||
                 tableColumn.isNullable !== columnMetadata.isNullable ||
                 tableColumn.isUnique !==
-                    this.normalizeIsUnique(columnMetadata) ||
+                this.normalizeIsUnique(columnMetadata) ||
                 tableColumn.enumName !== columnMetadata.enumName ||
                 (tableColumn.enum &&
                     columnMetadata.enum &&
@@ -1233,11 +1231,11 @@ export class PostgresDriver implements Driver {
                     )) || // enums in postgres are always strings
                 tableColumn.isGenerated !== columnMetadata.isGenerated ||
                 (tableColumn.spatialFeatureType || "").toLowerCase() !==
-                    (columnMetadata.spatialFeatureType || "").toLowerCase() ||
+                (columnMetadata.spatialFeatureType || "").toLowerCase() ||
                 tableColumn.srid !== columnMetadata.srid ||
                 tableColumn.generatedType !== columnMetadata.generatedType ||
                 (tableColumn.asExpression || "").trim() !==
-                    (columnMetadata.asExpression || "").trim()
+                (columnMetadata.asExpression || "").trim()
 
             // DEBUG SECTION
             // if (isColumnChanged) {
@@ -1423,7 +1421,7 @@ export class PostgresDriver implements Driver {
                     this.options.nativeDriver || PlatformTools.load("pg-native")
                 if (pgNative && this.postgres.native)
                     this.postgres = this.postgres.native
-            } catch (e) {}
+            } catch (e) { }
         } catch (e) {
             // todo: better error for browser env
             throw new DriverPackageNotInstalledError("Postgres", "pg")

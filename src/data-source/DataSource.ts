@@ -21,7 +21,6 @@ import { Migration } from "../migration/Migration"
 import { MongoRepository } from "../repository/MongoRepository"
 import { MongoEntityManager } from "../entity-manager/MongoEntityManager"
 import { EntityMetadataValidator } from "../metadata-builder/EntityMetadataValidator"
-import { DataSourceOptions } from "./DataSourceOptions"
 import { EntityManagerFactory } from "../entity-manager/EntityManagerFactory"
 import { DriverFactory } from "../driver/DriverFactory"
 import { ConnectionMetadataBuilder } from "../connection/ConnectionMetadataBuilder"
@@ -40,6 +39,19 @@ import { RelationIdLoader } from "../query-builder/RelationIdLoader"
 import { DriverUtils } from "../driver/DriverUtils"
 import { InstanceChecker } from "../util/InstanceChecker"
 import { ObjectLiteral } from "../common/ObjectLiteral"
+import { BaseDataSourceOptions } from "./BaseDataSourceOptions"
+import { DatabaseType } from ".."
+
+export type DriverOptions<TDriver extends Driver<BaseDataSourceOptions>> = TDriver extends Driver<infer U> ? U : never;
+
+export type DriverByType<TDriver extends DatabaseType> = InstanceType<typeof DriverFactory['drivers'][TDriver]>;
+
+export type DriverFromFromDatabaseTypeOrDriver<TType extends DatabaseType | Driver<BaseDataSourceOptions>> = TType extends DatabaseType ?
+    DriverByType<TType> : TType;
+
+export type DriverOptionsFromDatabaseTypeOrDriver<TType extends DatabaseType | Driver<BaseDataSourceOptions>> = DriverOptions<DriverFromFromDatabaseTypeOrDriver<TType>>;
+
+
 
 /**
  * DataSource is a pre-defined connection configuration to a specific database.
@@ -49,7 +61,7 @@ import { ObjectLiteral } from "../common/ObjectLiteral"
  * Before, it was called `Connection`, but now `Connection` is deprecated
  * because `Connection` isn't the best name for what it's actually is.
  */
-export class DataSource {
+export class DataSource<TOptions extends BaseDataSourceOptions = BaseDataSourceOptions> {
     readonly "@instanceof" = Symbol.for("DataSource")
 
     // -------------------------------------------------------------------------
@@ -66,7 +78,7 @@ export class DataSource {
     /**
      * Connection options.
      */
-    readonly options: DataSourceOptions
+    readonly options: TOptions
 
     /**
      * Indicates if DataSource is initialized or not.
@@ -76,7 +88,7 @@ export class DataSource {
     /**
      * Database driver used by this connection.
      */
-    driver: Driver
+    driver: Driver<TOptions>
 
     /**
      * EntityManager of this connection.
@@ -129,14 +141,14 @@ export class DataSource {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(options: DataSourceOptions) {
+    constructor(options: TOptions) {
         this.name = options.name || "default"
         this.options = options
         this.logger = new LoggerFactory().create(
             this.options.logger,
             this.options.logging,
         )
-        this.driver = new DriverFactory().create(this)
+        this.driver = new DriverFactory().create<TOptions>(this)
         this.manager = this.createEntityManager()
         this.namingStrategy =
             options.namingStrategy || new DefaultNamingStrategy()
@@ -197,7 +209,7 @@ export class DataSource {
     /**
      * Updates current connection options with provided options.
      */
-    setOptions(options: Partial<DataSourceOptions>): this {
+    setOptions(options: Partial<TOptions>): this {
         Object.assign(this.options, options)
 
         if (options.logger || options.logging) {
@@ -590,7 +602,7 @@ export class DataSource {
         if (!relationMetadata.isManyToMany)
             throw new TypeORMError(
                 `Relation "${entityTarget}#${relationPropertyPath}" does not have a many-to-many relationship.` +
-                    `You can use this method only on many-to-many relations.`,
+                `You can use this method only on many-to-many relations.`,
             )
 
         return relationMetadata.junctionEntityMetadata

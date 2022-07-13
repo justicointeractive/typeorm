@@ -6,6 +6,9 @@ import { MysqlDriver } from "../../../src/driver/mysql/MysqlDriver"
 import { PrimaryGeneratedColumn } from "../../../src/decorator/columns/PrimaryGeneratedColumn"
 import { Column } from "../../../src/decorator/columns/Column"
 import { Entity } from "../../../src/decorator/entity/Entity"
+import { SqliteDriver } from "../../../src/driver/sqlite/SqliteDriver"
+import { SqliteConnectionOptions } from "../../../src/driver/sqlite/SqliteConnectionOptions"
+import { DataSource } from "../../../src"
 
 // Uncomment when testing the aurora data API driver
 // import {AuroraMysqlDriver} from "../../../src/driver/aurora-mysql/AuroraMysqlDriver";
@@ -41,6 +44,19 @@ describe("ConnectionManager", () => {
             connection.driver.should.be.instanceOf(MysqlDriver)
             connection.isInitialized.should.be.false
         })
+
+        it("should create a connection with custom driver when custom driver is specified", () => {
+            interface CustomSqliteDriverOptions extends SqliteConnectionOptions {
+                customOption: string;
+            }
+            class CustomSqliteDriver extends SqliteDriver<CustomSqliteDriverOptions> { }
+            const dataSource = new DataSource({
+                type: CustomSqliteDriver,
+                customOption: 'abc123'
+            });
+            dataSource.initialize();
+            dataSource.driver.should.be.instanceOf(CustomSqliteDriver);
+        });
 
         /* it("should create a postgres connection when postgres driver is specified", () => {
             const options: ConnectionOptions = {

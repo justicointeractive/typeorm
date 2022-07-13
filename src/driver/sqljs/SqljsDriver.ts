@@ -19,7 +19,7 @@ interface Window {
 }
 declare let window: Window
 
-export class SqljsDriver extends AbstractSqliteDriver {
+export class SqljsDriver extends AbstractSqliteDriver<SqljsConnectionOptions> {
     // The driver specific options.
     options: SqljsConnectionOptions
 

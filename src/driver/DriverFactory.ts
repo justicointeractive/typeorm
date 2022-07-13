@@ -19,77 +19,53 @@ import { SapDriver } from "./sap/SapDriver"
 import { BetterSqlite3Driver } from "./better-sqlite3/BetterSqlite3Driver"
 import { CapacitorDriver } from "./capacitor/CapacitorDriver"
 import { SpannerDriver } from "./spanner/SpannerDriver"
+import { DatabaseType } from ".."
+import { DriverConstructor } from "./DriverConstructor"
+import { BaseDataSourceOptions } from "../data-source/BaseDataSourceOptions"
+import { ConnectOpts } from "net"
 
 /**
  * Helps to create drivers.
  */
 export class DriverFactory {
+    private static readonly drivers = ensureCompleteness({
+        "mysql": MysqlDriver,
+        "postgres": PostgresDriver,
+        "cockroachdb": CockroachDriver,
+        "sap": SapDriver,
+        "mariadb": MysqlDriver,
+        "sqlite": SqliteDriver,
+        "better-sqlite3": BetterSqlite3Driver,
+        "cordova": CordovaDriver,
+        "nativescript": NativescriptDriver,
+        "react-native": ReactNativeDriver,
+        "sqljs": SqljsDriver,
+        "oracle": OracleDriver,
+        "mssql": SqlServerDriver,
+        "mongodb": MongoDriver,
+        "expo": ExpoDriver,
+        "aurora-mysql": AuroraMysqlDriver,
+        "aurora-postgres": AuroraPostgresDriver,
+        "capacitor": CapacitorDriver,
+        "spanner": SpannerDriver
+    } as const)
+
     /**
      * Creates a new driver depend on a given connection's driver type.
      */
-    create(connection: DataSource): Driver {
+    create<TOptions extends BaseDataSourceOptions>(connection: DataSource<TOptions>): Driver<TOptions> {
         const { type } = connection.options
-        switch (type) {
-            case "mysql":
-                return new MysqlDriver(connection)
-            case "postgres":
-                return new PostgresDriver(connection)
-            case "cockroachdb":
-                return new CockroachDriver(connection)
-            case "sap":
-                return new SapDriver(connection)
-            case "mariadb":
-                return new MysqlDriver(connection)
-            case "sqlite":
-                return new SqliteDriver(connection)
-            case "better-sqlite3":
-                return new BetterSqlite3Driver(connection)
-            case "cordova":
-                return new CordovaDriver(connection)
-            case "nativescript":
-                return new NativescriptDriver(connection)
-            case "react-native":
-                return new ReactNativeDriver(connection)
-            case "sqljs":
-                return new SqljsDriver(connection)
-            case "oracle":
-                return new OracleDriver(connection)
-            case "mssql":
-                return new SqlServerDriver(connection)
-            case "mongodb":
-                return new MongoDriver(connection)
-            case "expo":
-                return new ExpoDriver(connection)
-            case "aurora-mysql":
-                return new AuroraMysqlDriver(connection)
-            case "aurora-postgres":
-                return new AuroraPostgresDriver(connection)
-            case "capacitor":
-                return new CapacitorDriver(connection)
-            case "spanner":
-                return new SpannerDriver(connection)
-            default:
-                throw new MissingDriverError(type, [
-                    "aurora-mysql",
-                    "aurora-postgres",
-                    "better-sqlite3",
-                    "capacitor",
-                    "cockroachdb",
-                    "cordova",
-                    "expo",
-                    "mariadb",
-                    "mongodb",
-                    "mssql",
-                    "mysql",
-                    "nativescript",
-                    "oracle",
-                    "postgres",
-                    "react-native",
-                    "sap",
-                    "sqlite",
-                    "sqljs",
-                    "spanner",
-                ])
+
+        const driver = typeof type === 'function' ? type : DriverFactory.drivers[type]
+
+        if (driver) {
+            return new driver(connection) as unknown as Driver<TOptions>;
         }
+
+        throw new MissingDriverError(type as DatabaseType, Object.keys(DriverFactory.drivers))
     }
+}
+
+function ensureCompleteness<T extends Record<DatabaseType, DriverConstructor>>(value: T) {
+    return value;
 }

@@ -13,7 +13,6 @@ import { ColumnType } from "../types/ColumnTypes"
 import { MongoSchemaBuilder } from "../../schema-builder/MongoSchemaBuilder"
 import { DataTypeDefaults } from "../types/DataTypeDefaults"
 import { TableColumn } from "../../schema-builder/table/TableColumn"
-import { DataSourceOptions } from "../../data-source/DataSourceOptions"
 import { EntityMetadata } from "../../metadata/EntityMetadata"
 import { ObjectUtils } from "../../util/ObjectUtils"
 import { ApplyValueTransformers } from "../../util/ApplyValueTransformers"
@@ -28,7 +27,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with MongoDB.
  */
-export class MongoDriver implements Driver {
+export class MongoDriver implements Driver<MongoConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -506,7 +505,7 @@ export class MongoDriver implements Driver {
     /**
      * Validate driver options to make sure everything is correct and driver will be able to establish connection.
      */
-    protected validateOptions(options: DataSourceOptions) {
+    protected validateOptions(options: MongoConnectionOptions) {
         // todo: fix
         // if (!options.url) {
         //     if (!options.database)
@@ -541,19 +540,15 @@ export class MongoDriver implements Driver {
 
         let connectionString: string
         if (options.replicaSet) {
-            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${
-                options.hostReplicaSet ||
+            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.hostReplicaSet ||
                 options.host + portUrlPart ||
                 "127.0.0.1" + portUrlPart
-            }/${options.database || ""}?replicaSet=${options.replicaSet}${
-                options.tls ? "&tls=true" : ""
-            }`
+                }/${options.database || ""}?replicaSet=${options.replicaSet}${options.tls ? "&tls=true" : ""
+                }`
         } else {
-            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${
-                options.host || "127.0.0.1"
-            }${portUrlPart}/${options.database || ""}${
-                options.tls ? "?tls=true" : ""
-            }`
+            connectionString = `${schemaUrlPart}://${credentialsUrlPart}${options.host || "127.0.0.1"
+                }${portUrlPart}/${options.database || ""}${options.tls ? "?tls=true" : ""
+                }`
         }
 
         return connectionString

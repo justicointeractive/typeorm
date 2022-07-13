@@ -15,7 +15,7 @@ import { filepathToName, isAbsolute } from "../../util/PathUtils"
 /**
  * Organizes communication with sqlite DBMS.
  */
-export class BetterSqlite3Driver extends AbstractSqliteDriver {
+export class BetterSqlite3Driver extends AbstractSqliteDriver<BetterSqlite3ConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Implemented Properties
     // -------------------------------------------------------------------------

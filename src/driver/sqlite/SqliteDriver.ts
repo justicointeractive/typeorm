@@ -15,7 +15,7 @@ import { filepathToName, isAbsolute } from "../../util/PathUtils"
 /**
  * Organizes communication with sqlite DBMS.
  */
-export class SqliteDriver extends AbstractSqliteDriver {
+export class SqliteDriver<TOptions extends SqliteConnectionOptions = SqliteConnectionOptions> extends AbstractSqliteDriver<TOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -23,7 +23,7 @@ export class SqliteDriver extends AbstractSqliteDriver {
     /**
      * Connection options.
      */
-    options: SqliteConnectionOptions
+    options: TOptions
 
     /**
      * SQLite underlying library.
@@ -38,7 +38,7 @@ export class SqliteDriver extends AbstractSqliteDriver {
         super(connection)
 
         this.connection = connection
-        this.options = connection.options as SqliteConnectionOptions
+        this.options = connection.options as TOptions
         this.database = this.options.database
 
         // validate options to make sure everything is set

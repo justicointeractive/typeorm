@@ -6,7 +6,7 @@ import { DataSource } from "../../data-source/DataSource"
 import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError"
 import { ReplicationMode } from "../types/ReplicationMode"
 
-export class ExpoDriver extends AbstractSqliteDriver {
+export class ExpoDriver extends AbstractSqliteDriver<ExpoConnectionOptions> {
     options: ExpoConnectionOptions
 
     // -------------------------------------------------------------------------

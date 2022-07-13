@@ -30,7 +30,7 @@ import { InstanceChecker } from "../../util/InstanceChecker"
 /**
  * Organizes communication with SQL Server DBMS.
  */
-export class SqlServerDriver implements Driver {
+export class SqlServerDriver implements Driver<SqlServerConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -543,9 +543,9 @@ export class SqlServerDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (columnMetadata.type === Boolean) {
@@ -779,9 +779,9 @@ export class SqlServerDriver implements Driver {
                     this.lowerDefaultValueIfNecessary(
                         this.normalizeDefault(columnMetadata),
                     ) !==
-                        this.lowerDefaultValueIfNecessary(
-                            tableColumn.default,
-                        )) || // we included check for generated here, because generated columns already can have default values
+                    this.lowerDefaultValueIfNecessary(
+                        tableColumn.default,
+                    )) || // we included check for generated here, because generated columns already can have default values
                 tableColumn.isPrimary !== columnMetadata.isPrimary ||
                 tableColumn.isNullable !== columnMetadata.isNullable ||
                 tableColumn.asExpression !== columnMetadata.asExpression ||
@@ -1059,13 +1059,13 @@ export class SqlServerDriver implements Driver {
         const authentication = !credentials.domain
             ? credentials.authentication
             : {
-                  type: "ntlm",
-                  options: {
-                      domain: credentials.domain,
-                      userName: credentials.username,
-                      password: credentials.password,
-                  },
-              }
+                type: "ntlm",
+                options: {
+                    domain: credentials.domain,
+                    userName: credentials.username,
+                    password: credentials.password,
+                },
+            }
         // build connection options for the driver
         const connectionOptions = Object.assign(
             {},

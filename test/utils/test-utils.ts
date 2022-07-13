@@ -16,6 +16,7 @@ import { QueryResultCache } from "../../src/cache/QueryResultCache"
 import path from "path"
 import { ObjectUtils } from "../../src/util/ObjectUtils"
 import { EntitySubscriberMetadataArgs } from "../../src/metadata-args/EntitySubscriberMetadataArgs"
+import { DriverConstructor } from "../../src/driver/DriverConstructor"
 
 /**
  * Interface in which data is stored in ormconfig.json of the project.
@@ -51,7 +52,7 @@ export interface TestingOptions {
     /**
      * List of enabled drivers for the given test suite.
      */
-    enabledDrivers?: DatabaseType[]
+    enabledDrivers?: (DatabaseType|DriverConstructor)[]
 
     /**
      * Entities needs to be included in the connection for the given test suite.
@@ -166,7 +167,7 @@ export interface TestingOptions {
  * and given options that can override some of its configuration for the test-specific use case.
  */
 export function setupSingleTestingConnection(
-    driverType: DatabaseType,
+    driverType: DatabaseType | DriverConstructor,
     options: TestingOptions,
 ): DataSourceOptions | undefined {
     const testingConnections = setupTestingConnections({

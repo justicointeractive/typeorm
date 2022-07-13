@@ -20,11 +20,11 @@ export type ReturningType = "insert" | "update" | "delete"
 /**
  * Driver organizes TypeORM communication with specific database management system.
  */
-export interface Driver {
+export interface Driver<TOptions extends BaseDataSourceOptions> {
     /**
      * Connection options.
      */
-    options: BaseDataSourceOptions
+    options: TOptions
 
     /**
      * Database name used to perform all write queries.

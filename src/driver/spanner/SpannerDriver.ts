@@ -24,7 +24,7 @@ import { CteCapabilities } from "../types/CteCapabilities"
 /**
  * Organizes communication with Spanner DBMS.
  */
-export class SpannerDriver implements Driver {
+export class SpannerDriver implements Driver<SpannerConnectionOptions> {
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -421,9 +421,9 @@ export class SpannerDriver implements Driver {
         if (value === null || value === undefined)
             return columnMetadata.transformer
                 ? ApplyValueTransformers.transformFrom(
-                      columnMetadata.transformer,
-                      value,
-                  )
+                    columnMetadata.transformer,
+                    value,
+                )
                 : value
 
         if (columnMetadata.type === Boolean || columnMetadata.type === "bool") {
